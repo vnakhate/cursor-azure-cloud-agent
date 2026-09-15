@@ -1,0 +1,2 @@
+# Token mode (recommended): configure hostname→origin in Cloudflare UI; no local ingress needed.
+# Credentials-file mode: set tunnel id, credentials-file, and ingress rules here.

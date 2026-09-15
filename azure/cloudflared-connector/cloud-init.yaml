@@ -1,0 +1,6 @@
+#cloud-config
+# Replace REPLACE_VAULT_NAME. Uses Managed Identity — no token in customData.
+package_update: true
+packages: [curl, jq]
+runcmd:
+  - echo "Use install.sh + keyvault-inject.sh from this repo on first boot"

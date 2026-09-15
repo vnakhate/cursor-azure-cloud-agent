@@ -1,0 +1,4 @@
+{
+  "install": "bash .cursor/scripts/install-azure-access.sh",
+  "start": "bash .cursor/scripts/start-azure-access.sh"
+}
