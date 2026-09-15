@@ -10,3 +10,5 @@ Generated with **archify** (architecture + sequence) and **visual-explainer** (o
 | `firecracker-azure.*.json` | Archify source specs |
 
 Local copies also opened under `~/.agent/diagrams/` when generated on the authoring machine.
+
+Vendor citations: [../CITATIONS.md](../CITATIONS.md).

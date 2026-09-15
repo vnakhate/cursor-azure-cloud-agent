@@ -31,3 +31,7 @@ Do **not** use shared Cursor egress IPs as org isolation.
 - JWT-validating gateway (optional later for non-Entra HTTP)
 - Classic Cisco AnyConnect on the Firecracker VM
 - Files or installs on a developer laptop
+
+## Citations
+
+Vendor sources for this design: [CITATIONS.md](./CITATIONS.md).
