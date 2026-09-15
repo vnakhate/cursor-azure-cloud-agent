@@ -1,0 +1,309 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Cursor Firecracker \u2192 Azure Access",
+    "output": "/Users/venky/.agent/diagrams/cursor-firecracker-azure-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "identity-path",
+        "label": "Identity path",
+        "focus": [
+          "agent",
+          "oidc",
+          "entra",
+          "arm"
+        ],
+        "note": "OIDC team_id mint and Entra federated exchange for Azure APIs."
+      },
+      {
+        "id": "network-path",
+        "label": "Network path",
+        "focus": [
+          "agent",
+          "cf_access",
+          "connector",
+          "private_app"
+        ],
+        "note": "HTTPS to Access-protected hostname; cloudflared reaches private origins."
+      }
+    ],
+    "viewBox": [
+      920,
+      520
+    ]
+  },
+  "components": [
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Your org agent",
+      "sublabel": "Firecracker VM",
+      "pos": [
+        40,
+        160
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "tag": "Cursor AWS"
+    },
+    {
+      "id": "other_agent",
+      "type": "external",
+      "label": "Other org agent",
+      "sublabel": "Firecracker VM",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "tag": "Cursor AWS"
+    },
+    {
+      "id": "oidc",
+      "type": "security",
+      "label": "OIDC socket",
+      "sublabel": "/run/cursor/api.sock",
+      "pos": [
+        260,
+        90
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "entra",
+      "type": "security",
+      "label": "Microsoft Entra",
+      "sublabel": "federated team_id",
+      "pos": [
+        500,
+        60
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "arm",
+      "type": "cloud",
+      "label": "Azure APIs",
+      "sublabel": "ARM / data plane",
+      "pos": [
+        740,
+        60
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "cf_access",
+      "type": "security",
+      "label": "CF Access",
+      "sublabel": "service token",
+      "pos": [
+        260,
+        230
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "brand": "cloudflare"
+    },
+    {
+      "id": "connector",
+      "type": "cloud",
+      "label": "cloudflared",
+      "sublabel": "outbound connector",
+      "pos": [
+        500,
+        230
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "brand": "cloudflare"
+    },
+    {
+      "id": "private_app",
+      "type": "backend",
+      "label": "Private apps",
+      "sublabel": "PE / internal",
+      "pos": [
+        740,
+        230
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "keyvault",
+      "type": "database",
+      "label": "Key Vault",
+      "sublabel": "tunnel token",
+      "pos": [
+        500,
+        360
+      ],
+      "size": [
+        150,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Cursor AWS \u00b7 Firecracker",
+      "wraps": [
+        "agent",
+        "other_agent",
+        "oidc"
+      ],
+      "pad": 18
+    },
+    {
+      "kind": "security-group",
+      "label": "Authenticated edge",
+      "wraps": [
+        "cf_access",
+        "entra"
+      ],
+      "pad": 16
+    },
+    {
+      "kind": "region",
+      "label": "Your Azure VNet",
+      "wraps": [
+        "connector",
+        "private_app",
+        "keyvault",
+        "arm"
+      ],
+      "pad": 18
+    }
+  ],
+  "connections": [
+    {
+      "from": "agent",
+      "to": "oidc",
+      "label": "OIDC mint",
+      "variant": "emphasis",
+      "labelAt": [
+        210,
+        140
+      ]
+    },
+    {
+      "from": "oidc",
+      "to": "entra",
+      "label": "assertion",
+      "variant": "security",
+      "labelAt": [
+        400,
+        55
+      ]
+    },
+    {
+      "from": "entra",
+      "to": "arm",
+      "label": "access_token",
+      "variant": "emphasis",
+      "labelAt": [
+        640,
+        40
+      ]
+    },
+    {
+      "from": "agent",
+      "to": "cf_access",
+      "label": "Access hdrs",
+      "variant": "emphasis",
+      "labelAt": [
+        210,
+        248
+      ]
+    },
+    {
+      "from": "cf_access",
+      "to": "connector",
+      "label": "tunnel",
+      "variant": "security",
+      "labelAt": [
+        400,
+        200
+      ]
+    },
+    {
+      "from": "connector",
+      "to": "private_app",
+      "label": "private HTTPS",
+      "variant": "emphasis",
+      "labelAt": [
+        640,
+        200
+      ]
+    },
+    {
+      "from": "keyvault",
+      "to": "connector",
+      "label": "TUNNEL_TOKEN",
+      "variant": "dashed",
+      "labelAt": [
+        400,
+        320
+      ]
+    },
+    {
+      "from": "other_agent",
+      "to": "cf_access",
+      "label": "blocked",
+      "variant": "dashed",
+      "labelAt": [
+        180,
+        280
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Paths",
+      "items": [
+        "OIDC \u2192 Entra \u2192 Azure APIs",
+        "Access \u2192 cloudflared \u2192 private apps"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Org lock",
+      "items": [
+        "Entra subject team_id:T",
+        "Access tokens only in your secrets"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Network",
+      "items": [
+        "Allowlist-only egress",
+        "Private origins; no public door"
+      ]
+    }
+  ]
+}

@@ -1,4 +1,9 @@
 # Visual explainer
 
-Cursor Firecracker (your org) → Cloudflare Access + Entra `team_id` → Azure `cloudflared` → private endpoints.
-Other orgs blocked at Access/Entra. Shared egress IPs are not org trust.
+See interactive HTML under [`docs/`](./docs/):
+
+- Architecture — Cursor Firecracker → CF Access / Entra → Azure VNet
+- Sequence — agent boot identity + private HTTP call
+- Overview — blueprint summary page
+
+Source of truth for runtime setup remains `CHECKLIST.md` and `.cursor/` scripts.

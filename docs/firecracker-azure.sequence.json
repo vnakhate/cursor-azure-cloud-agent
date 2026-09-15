@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Agent boot \u2192 Azure private call",
+    "output": "/Users/venky/.agent/diagrams/cursor-firecracker-azure-sequence.html",
+    "viewBox": [
+      880,
+      480
+    ],
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "views": [
+      {
+        "id": "identity",
+        "label": "Identity",
+        "focus": [
+          "agent",
+          "oidc",
+          "entra"
+        ],
+        "note": "Mint team_id OIDC and exchange at Entra."
+      },
+      {
+        "id": "private",
+        "label": "Private call",
+        "focus": [
+          "agent",
+          "cf_edge",
+          "connector",
+          "app"
+        ],
+        "note": "Access-gated path through cloudflared."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Cloud Agent",
+      "sublabel": "Firecracker"
+    },
+    {
+      "id": "oidc",
+      "type": "security",
+      "label": "OIDC socket",
+      "sublabel": "api.sock"
+    },
+    {
+      "id": "entra",
+      "type": "security",
+      "label": "Entra",
+      "sublabel": "token"
+    },
+    {
+      "id": "cf_edge",
+      "type": "cloud",
+      "label": "CF Access",
+      "sublabel": "edge"
+    },
+    {
+      "id": "connector",
+      "type": "cloud",
+      "label": "cloudflared",
+      "sublabel": "Azure"
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "Private app",
+      "sublabel": "origin"
+    }
+  ],
+  "segments": [
+    {
+      "from": 145,
+      "to": 265,
+      "label": "Identity"
+    },
+    {
+      "from": 280,
+      "to": 405,
+      "label": "Private call"
+    }
+  ],
+  "messages": [
+    {
+      "id": "start",
+      "from": "agent",
+      "to": "oidc",
+      "y": 165,
+      "label": "mint OIDC team_id",
+      "variant": "security"
+    },
+    {
+      "id": "jwt",
+      "from": "oidc",
+      "to": "agent",
+      "y": 195,
+      "label": "JWT team_id:T",
+      "variant": "return"
+    },
+    {
+      "id": "exchange",
+      "from": "agent",
+      "to": "entra",
+      "y": 225,
+      "label": "client_assertion",
+      "variant": "emphasis"
+    },
+    {
+      "id": "aztok",
+      "from": "entra",
+      "to": "agent",
+      "y": 255,
+      "label": "access_token",
+      "variant": "return"
+    },
+    {
+      "id": "http",
+      "from": "agent",
+      "to": "cf_edge",
+      "y": 295,
+      "label": "HTTPS + Access headers",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tunnel",
+      "from": "cf_edge",
+      "to": "connector",
+      "y": 325,
+      "label": "tunnel forward",
+      "variant": "security"
+    },
+    {
+      "id": "origin",
+      "from": "connector",
+      "to": "app",
+      "y": 355,
+      "label": "private request",
+      "variant": "emphasis"
+    },
+    {
+      "id": "ok",
+      "from": "app",
+      "to": "agent",
+      "y": 385,
+      "label": "200 via tunnel",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "agent",
+      "from": 160,
+      "to": 390,
+      "type": "backend"
+    },
+    {
+      "participant": "oidc",
+      "from": 160,
+      "to": 205,
+      "type": "security"
+    },
+    {
+      "participant": "entra",
+      "from": 220,
+      "to": 265,
+      "type": "security"
+    },
+    {
+      "participant": "cf_edge",
+      "from": 290,
+      "to": 390,
+      "type": "cloud"
+    },
+    {
+      "participant": "connector",
+      "from": 320,
+      "to": 390,
+      "type": "cloud"
+    },
+    {
+      "participant": "app",
+      "from": 350,
+      "to": 390,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Result",
+      "items": [
+        "Private Azure reachability without inbound ports",
+        "Org lock: team_id JWT + Access secrets"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Limits",
+      "items": [
+        "Does not stop prompt injection on your agent",
+        "Other orgs fail without your secrets"
+      ]
+    }
+  ]
+}
